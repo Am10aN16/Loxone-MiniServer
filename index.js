@@ -1,5 +1,7 @@
 const express = require('express');
 const WebSocket = require('ws');
+const path = require("path");
+const os = require('os');
 
 if (typeof LxCommunicator === 'undefined') {
     global.LxCommunicator = require('lxcommunicator');
@@ -43,7 +45,7 @@ wss.on('connection', (ws) => {
 
 // Function to toggle the light
 async function toggleLight() {
-    const uuidOfLightControl = '1b394017-00e9-71fe-ffffcb0481ff57c7'; // Replace with the actual UUID of your light control
+    const uuidOfLightControl = '1b394017-00e9-71fe-ffffcb0481ff57c7';
     const command = isLightOn ? 'Off' : 'On';
 
     try {
@@ -51,7 +53,7 @@ async function toggleLight() {
         isLightOn = !isLightOn;
     } catch (error) {
         console.error('Failed to toggle light:', error);
-        throw error; // Ensure the error is thrown to be caught in the WebSocket message handler
+        throw error; 
     }
 
     return isLightOn;
@@ -60,7 +62,7 @@ async function toggleLight() {
 // Function to send commands to the Loxone Miniserver using LxCommunicator
 async function sendCommand(uuid, command) {
 
-    const deviceInfo = require('os').hostname();
+    const deviceInfo = os.hostname();
 
     const WebSocketConfig = LxCommunicator.WebSocketConfig;
     const config = new WebSocketConfig(WebSocketConfig.protocol.WS, uuid, deviceInfo, WebSocketConfig.permission.APP, false);
@@ -104,10 +106,21 @@ async function sendCommand(uuid, command) {
         }
     } catch (error) {
         console.error(`Failed to send command: ${error}`);
-        throw error; // Rethrow the error to be handled by the calling function
+        throw error; 
     } finally {
         await socket.close();
     }
+}
+const __dirname1 = path.resolve();
+if (process.env.NODE_ENV === 'production') {
+    app.use(express.static(path.join(__dirname1, '/client/build')));
+    app.get('*', (req, res) => {
+        res.sendFile(path.join(__dirname1, 'client', 'build', 'index.html'))
+    })
+} else {
+    app.get('/', (req, res) => {
+        res.send("Hello from the server")
+    })
 }
 
 app.listen(port, () => {
