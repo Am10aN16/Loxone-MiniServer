@@ -8,7 +8,7 @@ const Dashboard = () => {
 
     useEffect(() => {
         // Create WebSocket connection
-        const socket = new WebSocket('ws://localhost:5000');
+        const socket = new WebSocket('ws://loxone-light.onrender.com/');
         setWs(socket);
 
         // Connection opened
